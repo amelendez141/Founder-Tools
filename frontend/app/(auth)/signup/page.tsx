@@ -7,7 +7,6 @@ import { z } from "zod";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useRegister } from "@/lib/api/hooks/use-auth";
 import { useTrialStore } from "@/lib/stores/trial-store";
 
@@ -54,11 +53,12 @@ export default function SignupPage() {
   };
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
+    <div className="animate-fade-in-up">
+      {/* Logo and branding */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-vibrant shadow-lg shadow-indigo-500/30 mb-4 animate-bounce-subtle">
           <svg
-            className="h-6 w-6 text-primary-600"
+            className="h-8 w-8 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -71,53 +71,92 @@ export default function SignupPage() {
             />
           </svg>
         </div>
-        <CardTitle>Create your account</CardTitle>
-        <CardDescription>
-          Start your entrepreneurial journey today
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
+        <p className="text-gray-500">Start your entrepreneurial journey today</p>
+      </div>
+
+      {/* Card */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+            <div className="p-4 text-sm text-red-600 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3 animate-fade-in">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-3 h-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
               {error}
             </div>
           )}
-          <Input
-            type="email"
-            placeholder="you@example.com"
-            error={errors.email?.message}
-            {...registerField("email")}
-          />
-          <Input
-            type="password"
-            placeholder="Password (min 8 characters)"
-            error={errors.password?.message}
-            {...registerField("password")}
-          />
-          <Input
-            type="password"
-            placeholder="Confirm password"
-            error={errors.confirmPassword?.message}
-            {...registerField("confirmPassword")}
-          />
-        </CardContent>
-        <CardFooter className="flex-col gap-4">
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Email</label>
+            <Input
+              type="email"
+              placeholder="you@example.com"
+              error={errors.email?.message}
+              className="h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
+              {...registerField("email")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Password</label>
+            <Input
+              type="password"
+              placeholder="Create a strong password"
+              error={errors.password?.message}
+              className="h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
+              {...registerField("password")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+            <Input
+              type="password"
+              placeholder="Confirm your password"
+              error={errors.confirmPassword?.message}
+              className="h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
+              {...registerField("confirmPassword")}
+            />
+          </div>
+
           <Button
             type="submit"
-            className="w-full"
+            className="w-full h-12 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300"
             isLoading={isPending}
           >
             Create account
           </Button>
-          <p className="text-sm text-gray-500 text-center">
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary-600 hover:underline">
+            <Link
+              href="/login"
+              className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+            >
               Sign in
             </Link>
           </p>
-        </CardFooter>
-      </form>
-    </Card>
+        </div>
+      </div>
+
+      {/* Features list */}
+      <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+        {[
+          { icon: "🚀", label: "5-Phase Journey" },
+          { icon: "🤖", label: "AI-Powered" },
+          { icon: "📄", label: "Business Plan" },
+        ].map((feature) => (
+          <div key={feature.label} className="text-xs text-gray-400">
+            <div className="text-lg mb-1">{feature.icon}</div>
+            {feature.label}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
