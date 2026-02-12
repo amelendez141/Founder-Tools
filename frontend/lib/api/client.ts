@@ -359,7 +359,9 @@ export type ArtifactType =
   | "GTM_PLAN"
   | "GROWTH_PLAN"
   | "CUSTOMER_LIST"
-  | "CUSTOM";
+  | "CUSTOM"
+  | "PROBLEM_SOLUTION_FIT"
+  | "COMPETITOR_ANALYSIS";
 
 export interface Artifact {
   id: string;
