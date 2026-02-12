@@ -7,6 +7,7 @@ export function initSchema(dbPath?: string): void {
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
+      password_hash TEXT,
       created_at TEXT NOT NULL,
       experience_level INTEGER,
       business_type TEXT CHECK(business_type IN ('ONLINE','LOCAL','HYBRID')),
@@ -15,6 +16,13 @@ export function initSchema(dbPath?: string): void {
       weekly_hours INTEGER
     )
   `);
+
+  // Migration: add password_hash column if it doesn't exist (for existing databases)
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN password_hash TEXT`);
+  } catch {
+    // Column already exists — expected on subsequent runs
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS magic_link_tokens (

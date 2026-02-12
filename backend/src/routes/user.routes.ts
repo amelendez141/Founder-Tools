@@ -1,14 +1,14 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { parseBody, sendSuccess, sendError } from "../utils/http";
-import { validateEmail, validateIntake } from "../utils/validation";
+import { validateEmail, validateIntake, validatePassword } from "../utils/validation";
 import { ErrorCode } from "../types";
 import { createJwt } from "../utils/auth";
 import { userService } from "../utils/di";
-import { magicLinkLimiter, verifyLimiter } from "../utils/rate-limiter";
+import { magicLinkLimiter, verifyLimiter, loginLimiter } from "../utils/rate-limiter";
 import { emailService } from "../services/email.service";
 import { env } from "../config/env";
 
-/** POST /users - Create a new user */
+/** POST /users - Create a new user (legacy magic link flow) */
 export async function createUser(
   req: IncomingMessage,
   res: ServerResponse,
@@ -25,6 +25,66 @@ export async function createUser(
 
   const user = userService.createUser(email);
   sendSuccess(res, 201, user);
+}
+
+/** POST /auth/register - Register with email and password */
+export async function register(
+  req: IncomingMessage,
+  res: ServerResponse,
+  _params: Record<string, string>
+): Promise<void> {
+  const body = await parseBody(req);
+  const email = validateEmail(body.email);
+  const password = validatePassword(body.password);
+
+  const existing = userService.findByEmail(email);
+  if (existing) {
+    sendError(res, 409, ErrorCode.CONFLICT, "Email already registered");
+    return;
+  }
+
+  const user = userService.createUserWithPassword(email, password);
+
+  // Return JWT immediately so user is logged in after registration
+  sendSuccess(res, 201, {
+    jwt: createJwt(user.id),
+    user,
+  });
+}
+
+/** POST /auth/login - Login with email and password */
+export async function login(
+  req: IncomingMessage,
+  res: ServerResponse,
+  _params: Record<string, string>
+): Promise<void> {
+  // Rate limit by IP
+  const ip = req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim()
+    ?? req.socket.remoteAddress
+    ?? "unknown";
+  if (!loginLimiter.check(ip)) {
+    sendError(res, 429, ErrorCode.RATE_LIMITED, "Too many login attempts. Try again in 15 minutes.");
+    return;
+  }
+
+  const body = await parseBody(req);
+  const email = validateEmail(body.email);
+
+  if (typeof body.password !== "string" || !body.password) {
+    sendError(res, 400, ErrorCode.VALIDATION_ERROR, "Password is required");
+    return;
+  }
+
+  const user = userService.verifyPassword(email, body.password);
+  if (!user) {
+    sendError(res, 401, ErrorCode.UNAUTHORIZED, "Invalid email or password");
+    return;
+  }
+
+  sendSuccess(res, 200, {
+    jwt: createJwt(user.id),
+    user,
+  });
 }
 
 /** POST /auth/magic-link - Send magic link */

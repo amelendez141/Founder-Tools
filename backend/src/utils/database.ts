@@ -1,8 +1,9 @@
 import { DatabaseSync } from "node:sqlite";
 import * as path from "path";
 import * as fs from "fs";
+import { env } from "../config/env";
 
-const DB_PATH = path.join(__dirname, "..", "..", "data", "toolkit.db");
+const DB_PATH = env.DATABASE_PATH;
 
 /**
  * SQLite database wrapper using Node.js built-in node:sqlite module.
@@ -21,6 +22,7 @@ export class Database {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
+    console.log(`[DB] Opening database at: ${resolvedPath}`);
     this.db = new DatabaseSync(resolvedPath);
     this.db.exec("PRAGMA journal_mode = WAL");
     this.db.exec("PRAGMA busy_timeout = 5000");

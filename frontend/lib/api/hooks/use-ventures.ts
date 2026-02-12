@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type Venture } from "../client";
-import { toast } from "sonner";
+import { api, type Venture, type ArtifactType } from "../client";
 
 export function useVenture(ventureId: string) {
   return useQuery({
@@ -27,10 +26,6 @@ export function useCreateVenture() {
     mutationFn: () => api.createVenture(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ventures"] });
-      toast.success("Venture created!");
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 }
@@ -44,10 +39,27 @@ export function useUpdateVenture(ventureId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["venture", ventureId] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", ventureId] });
-      toast.success("Venture updated");
     },
-    onError: (error) => {
-      toast.error(error.message);
+  });
+}
+
+export function useCreateArtifact(ventureId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      phaseNumber,
+      type,
+      content,
+    }: {
+      phaseNumber: number;
+      type: ArtifactType;
+      content: Record<string, unknown>;
+    }) => api.createArtifact(ventureId, phaseNumber, type, content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["artifacts", ventureId] });
+      queryClient.invalidateQueries({ queryKey: ["phases", ventureId] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", ventureId] });
     },
   });
 }

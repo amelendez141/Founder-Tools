@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuthStore, useHasHydrated } from "@/lib/stores/auth-store";
 import { useUserVentures, useCreateVenture } from "@/lib/api/hooks/use-ventures";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,19 @@ import Link from "next/link";
 
 export default function VenturesPage() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
   const user = useAuthStore((state) => state.user);
   const { data, isLoading } = useUserVentures(user?.id ?? "");
   const { mutate: createVenture, isPending: isCreating } = useCreateVenture();
+
+  // Wait for hydration before checking auth
+  if (!hasHydrated) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   if (!user) {
     router.push("/login");

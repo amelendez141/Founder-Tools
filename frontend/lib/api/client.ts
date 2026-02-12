@@ -71,6 +71,21 @@ class ApiClient {
   }
 
   // Auth
+  async register(email: string, password: string) {
+    return this.request<{ jwt: string; user: User }>("POST", "/auth/register", {
+      email,
+      password,
+    });
+  }
+
+  async login(email: string, password: string) {
+    return this.request<{ jwt: string; user: User }>("POST", "/auth/login", {
+      email,
+      password,
+    });
+  }
+
+  // Legacy auth methods (kept for backward compatibility)
   async createUser(email: string) {
     return this.request<{ id: string; email: string }>("POST", "/users", {
       email,
@@ -113,7 +128,10 @@ class ApiClient {
   }
 
   async getVenture(ventureId: string) {
-    return this.request<Venture>("GET", `/ventures/${ventureId}`);
+    return this.request<{ venture: Venture; phases: PhaseProgress[]; artifact_count: number }>(
+      "GET",
+      `/ventures/${ventureId}`
+    );
   }
 
   async updateVenture(ventureId: string, fields: Partial<Venture>) {
@@ -122,10 +140,11 @@ class ApiClient {
 
   // Phases
   async getEnrichedPhases(ventureId: string) {
-    return this.request<EnrichedPhase[]>(
+    const response = await this.request<{ phases: EnrichedPhase[] }>(
       "GET",
       `/ventures/${ventureId}/phases/enriched`
     );
+    return response.phases;
   }
 
   async evaluateGate(ventureId: string, phaseNum: number) {
@@ -198,7 +217,21 @@ class ApiClient {
     const path = phaseNumber
       ? `/ventures/${ventureId}/artifacts?phase=${phaseNumber}`
       : `/ventures/${ventureId}/artifacts`;
-    return this.request<Artifact[]>("GET", path);
+    const response = await this.request<{ artifacts: Artifact[] }>("GET", path);
+    return response.artifacts;
+  }
+
+  async createArtifact(
+    ventureId: string,
+    phaseNumber: number,
+    type: ArtifactType,
+    content: Record<string, unknown>
+  ) {
+    return this.request<Artifact>("POST", `/ventures/${ventureId}/artifacts`, {
+      phase_number: phaseNumber,
+      type,
+      content,
+    });
   }
 
   async shareArtifact(ventureId: string, artifactId: string) {
@@ -226,11 +259,12 @@ class ApiClient {
   }
 
   async trialChat(sessionToken: string, message: string) {
-    return this.request<{ message: string; remaining: number }>(
+    const response = await this.request<{ reply: string; remaining: number }>(
       "POST",
       "/trial/chat",
       { session_token: sessionToken, message }
     );
+    return { message: response.reply, remaining: response.remaining };
   }
 
   async claimTrialSession(sessionToken: string) {
@@ -323,7 +357,9 @@ export type ArtifactType =
   | "BUSINESS_PLAN"
   | "OFFER_STATEMENT"
   | "GTM_PLAN"
-  | "GROWTH_PLAN";
+  | "GROWTH_PLAN"
+  | "CUSTOMER_LIST"
+  | "CUSTOM";
 
 export interface Artifact {
   id: string;

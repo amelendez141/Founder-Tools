@@ -11,6 +11,8 @@ import { attachRequestId } from "./middleware/request-id";
 // Route handlers
 import {
   createUser,
+  register,
+  login,
   sendMagicLink,
   verifyToken,
   updateIntake,
@@ -76,6 +78,8 @@ router.add("PUT", "/users/:id/intake", updateIntake);
 router.add("GET", "/users/:id/ventures", listUserVentures);
 
 // Auth endpoints
+router.add("POST", "/auth/register", register);
+router.add("POST", "/auth/login", login);
 router.add("POST", "/auth/magic-link", sendMagicLink);
 router.add("POST", "/auth/verify", verifyToken);
 
@@ -129,6 +133,8 @@ const PORT = env.PORT;
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = new Set([
   "POST /users",
+  "POST /auth/register",
+  "POST /auth/login",
   "POST /auth/magic-link",
   "POST /auth/verify",
   "GET /health",

@@ -66,9 +66,12 @@ export class InMemoryRateLimiter {
 export const magicLinkLimiter = new InMemoryRateLimiter(5, 15 * 60 * 1000);
 // 10 verify attempts per IP per 15 minutes
 export const verifyLimiter = new InMemoryRateLimiter(10, 15 * 60 * 1000);
+// 10 login attempts per IP per 15 minutes
+export const loginLimiter = new InMemoryRateLimiter(10, 15 * 60 * 1000);
 
 // Cleanup every 5 minutes
 setInterval(() => {
   magicLinkLimiter.cleanup();
   verifyLimiter.cleanup();
+  loginLimiter.cleanup();
 }, 5 * 60 * 1000).unref();

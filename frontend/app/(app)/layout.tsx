@@ -1,30 +1,47 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { useLogout } from "@/lib/api/hooks/use-auth";
-import { cn } from "@/lib/utils/cn";
+import { api } from "@/lib/api/client";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const user = useAuthStore((state) => state.user);
-  const logout = useLogout();
+  const [isClient, setIsClient] = useState(false);
 
-  const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Ventures", href: "/ventures", icon: BriefcaseIcon },
-  ];
+  useEffect(() => {
+    setIsClient(true);
+    useAuthStore.persist.rehydrate();
+  }, []);
+
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    api.clearToken();
+    logout();
+    window.location.href = "/";
+  };
+
+  // Show loading state while hydrating
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      {/* Header - hidden when printing */}
+      <header className="bg-white border-b border-gray-200 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-8">
               <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
                   <svg
                     className="h-5 w-5 text-white"
                     fill="none"
@@ -44,31 +61,36 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </span>
               </Link>
               <nav className="hidden md:flex gap-6">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-2 text-sm font-medium transition-colors",
-                      pathname.startsWith(item.href)
-                        ? "text-primary-600"
-                        : "text-gray-600 hover:text-gray-900"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.name}
-                  </Link>
-                ))}
+                <Link
+                  href="/dashboard"
+                  className={`text-sm font-medium ${
+                    pathname === "/dashboard" ? "text-blue-600" : "text-gray-600"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/ventures"
+                  className={`text-sm font-medium ${
+                    pathname.startsWith("/ventures") ? "text-blue-600" : "text-gray-600"
+                  }`}
+                >
+                  Ventures
+                </Link>
               </nav>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{user?.email}</span>
-              <button
-                onClick={logout}
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Sign out
-              </button>
+              {user && (
+                <>
+                  <span className="text-sm text-gray-600">{String(user.email)}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm text-gray-600 hover:text-gray-900"
+                  >
+                    Sign out
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

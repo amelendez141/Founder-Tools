@@ -4,26 +4,53 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "../client";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
+export function useRegister() {
+  const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
+
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      api.register(email, password),
+    onSuccess: (data) => {
+      api.setToken(data.jwt);
+      setUser(data.user);
+      // Small delay to ensure state is persisted before navigation
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
+    },
+  });
+}
+
+export function useLogin() {
+  const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
+
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      api.login(email, password),
+    onSuccess: (data) => {
+      api.setToken(data.jwt);
+      setUser(data.user);
+      // Small delay to ensure state is persisted before navigation
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
+    },
+  });
+}
+
+// Legacy hooks (kept for backward compatibility with verify page)
 export function useCreateUser() {
   return useMutation({
     mutationFn: (email: string) => api.createUser(email),
-    onError: (error) => {
-      toast.error(error.message);
-    },
   });
 }
 
 export function useSendMagicLink() {
   return useMutation({
     mutationFn: (email: string) => api.sendMagicLink(email),
-    onSuccess: () => {
-      toast.success("Magic link sent! Check your email.");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
   });
 }
 
@@ -36,11 +63,12 @@ export function useVerifyToken() {
     onSuccess: (data) => {
       api.setToken(data.jwt);
       setUser(data.user);
-      toast.success("Welcome back!");
-      router.push("/dashboard");
+      // Small delay to ensure state is persisted before navigation
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
       router.push("/login");
     },
   });
@@ -54,6 +82,5 @@ export function useLogout() {
     api.clearToken();
     logout();
     router.push("/");
-    toast.success("Logged out successfully");
   };
 }

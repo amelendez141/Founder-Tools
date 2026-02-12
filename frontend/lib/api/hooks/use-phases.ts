@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../client";
-import { toast } from "sonner";
 
 export function useEnrichedPhases(ventureId: string) {
   return useQuery({
@@ -20,9 +19,6 @@ export function useEvaluateGate(ventureId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["phases", ventureId] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", ventureId] });
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 }
@@ -43,10 +39,6 @@ export function useUpdateGate(ventureId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["phases", ventureId] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", ventureId] });
-      toast.success("Progress saved");
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 }

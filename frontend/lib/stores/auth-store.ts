@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { useEffect, useState } from "react";
 import type { User } from "@/lib/api/client";
 
 interface AuthState {
@@ -24,7 +25,22 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      skipHydration: true,
     }
   )
 );
+
+// Hook to wait for client-side hydration
+export function useHasHydrated() {
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    // Manually trigger Zustand hydration on client
+    useAuthStore.persist.rehydrate();
+    setHasHydrated(true);
+  }, []);
+
+  return hasHydrated;
+}

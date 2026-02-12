@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type ArtifactType } from "../client";
-import { toast } from "sonner";
 
 export function useChatHistory(ventureId: string, phaseNumber?: number) {
   return useQuery({
@@ -29,9 +28,6 @@ export function useSendMessage(ventureId: string) {
       });
       queryClient.invalidateQueries({ queryKey: ["rateLimit", ventureId] });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
   });
 }
 
@@ -50,10 +46,6 @@ export function useGenerateArtifact(ventureId: string) {
       queryClient.invalidateQueries({ queryKey: ["artifacts", ventureId] });
       queryClient.invalidateQueries({ queryKey: ["rateLimit", ventureId] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", ventureId] });
-      toast.success("Artifact generated!");
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 }

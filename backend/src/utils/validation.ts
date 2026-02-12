@@ -23,6 +23,19 @@ export function validateEmail(email: unknown): string {
   return trimmed;
 }
 
+export function validatePassword(password: unknown): string {
+  if (typeof password !== "string" || !password) {
+    throw new ValidationError({ password: "Password is required" });
+  }
+  if (password.length < 8) {
+    throw new ValidationError({ password: "Password must be at least 8 characters" });
+  }
+  if (password.length > 128) {
+    throw new ValidationError({ password: "Password must be at most 128 characters" });
+  }
+  return password;
+}
+
 export function validateIntake(body: Record<string, unknown>): {
   experience_level: number;
   business_type: BusinessType;

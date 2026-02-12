@@ -1,9 +1,66 @@
-import { randomUUID, randomBytes, createHash } from "crypto";
+import { randomUUID, randomBytes, createHash, scryptSync, timingSafeEqual } from "crypto";
 import { getDb } from "../utils/database";
 import type { User, MagicLinkToken } from "../types";
 
+// Password hashing using scrypt (built-in Node.js, no external dependency needed)
+const SALT_LENGTH = 16;
+const KEY_LENGTH = 64;
+const SCRYPT_PARAMS = { N: 16384, r: 8, p: 1 };
+
+function hashPassword(password: string): string {
+  const salt = randomBytes(SALT_LENGTH).toString("hex");
+  const hash = scryptSync(password, salt, KEY_LENGTH, SCRYPT_PARAMS).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, storedHash: string): boolean {
+  const [salt, hash] = storedHash.split(":");
+  if (!salt || !hash) return false;
+  const hashBuffer = Buffer.from(hash, "hex");
+  const derivedKey = scryptSync(password, salt, KEY_LENGTH, SCRYPT_PARAMS);
+  return timingSafeEqual(hashBuffer, derivedKey);
+}
+
 export class UserService {
-  /** Create a new user. Throws if email already exists (UNIQUE constraint). */
+  /** Create a new user with password. Throws if email already exists (UNIQUE constraint). */
+  createUserWithPassword(email: string, password: string): User {
+    const db = getDb();
+    const id = randomUUID();
+    const now = new Date().toISOString();
+    const passwordHash = hashPassword(password);
+
+    db.exec(
+      `INSERT INTO users (id, email, password_hash, created_at) VALUES (?, ?, ?, ?)`,
+      [id, email, passwordHash, now]
+    );
+
+    return {
+      id,
+      email,
+      created_at: now,
+      experience_level: null,
+      business_type: null,
+      budget: null,
+      income_goal: null,
+      weekly_hours: null,
+    };
+  }
+
+  /** Verify email and password. Returns user if valid, null otherwise. */
+  verifyPassword(email: string, password: string): User | null {
+    const db = getDb();
+    const row = db.queryOne<{ id: string; password_hash: string | null }>(
+      `SELECT id, password_hash FROM users WHERE email = ?`,
+      [email]
+    );
+
+    if (!row || !row.password_hash) return null;
+    if (!verifyPassword(password, row.password_hash)) return null;
+
+    return this.findById(row.id);
+  }
+
+  /** Create a new user (legacy - for magic link flow). Throws if email already exists (UNIQUE constraint). */
   createUser(email: string): User {
     const db = getDb();
     const id = randomUUID();

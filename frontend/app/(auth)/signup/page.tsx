@@ -5,88 +5,53 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { useCreateUser, useSendMagicLink } from "@/lib/api/hooks/use-auth";
+import { useRegister } from "@/lib/api/hooks/use-auth";
 import { useTrialStore } from "@/lib/stores/trial-store";
-import { api } from "@/lib/api/client";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [sent, setSent] = useState(false);
-  const { mutateAsync: createUser, isPending: isCreating } = useCreateUser();
-  const { mutateAsync: sendMagicLink, isPending: isSending } = useSendMagicLink();
-  const { sessionToken, clearTrial } = useTrialStore();
+  const [error, setError] = useState<string | null>(null);
+  const { mutate: register, isPending } = useRegister();
+  const { sessionToken } = useTrialStore();
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormData) => {
-    try {
-      // Create user
-      await createUser(data.email);
+  const onSubmit = (data: FormData) => {
+    setError(null);
 
-      // Send magic link
-      await sendMagicLink(data.email);
-
-      // If there's a trial session, we'll claim it after verification
-      if (sessionToken) {
-        // Store the session token for claiming after login
-        localStorage.setItem("pending_trial_claim", sessionToken);
-      }
-
-      setSent(true);
-    } catch (error) {
-      // Error is handled by the mutation
+    // If there's a trial session, store it for claiming after registration
+    if (sessionToken) {
+      localStorage.setItem("pending_trial_claim", sessionToken);
     }
-  };
 
-  if (sent) {
-    return (
-      <Card>
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-            <svg
-              className="h-6 w-6 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <CardTitle>Check your email</CardTitle>
-          <CardDescription>
-            We&apos;ve created your account and sent you a magic link. Click the
-            link in your email to get started.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter className="justify-center">
-          <Button variant="link" onClick={() => setSent(false)}>
-            Didn&apos;t receive it? Try again
-          </Button>
-        </CardFooter>
-      </Card>
+    register(
+      { email: data.email, password: data.password },
+      {
+        onError: (err) => {
+          setError(err.message || "Registration failed. Please try again.");
+        },
+      }
     );
-  }
+  };
 
   return (
     <Card>
@@ -112,19 +77,36 @@ export default function SignupPage() {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {error && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+              {error}
+            </div>
+          )}
           <Input
             type="email"
             placeholder="you@example.com"
             error={errors.email?.message}
-            {...register("email")}
+            {...registerField("email")}
+          />
+          <Input
+            type="password"
+            placeholder="Password (min 8 characters)"
+            error={errors.password?.message}
+            {...registerField("password")}
+          />
+          <Input
+            type="password"
+            placeholder="Confirm password"
+            error={errors.confirmPassword?.message}
+            {...registerField("confirmPassword")}
           />
         </CardContent>
         <CardFooter className="flex-col gap-4">
           <Button
             type="submit"
             className="w-full"
-            isLoading={isCreating || isSending}
+            isLoading={isPending}
           >
             Create account
           </Button>

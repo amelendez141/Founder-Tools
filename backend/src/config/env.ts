@@ -51,7 +51,10 @@ function parseEnv(): EnvConfig {
     JWT_SECRET: jwtSecret ?? generateRandomSecret(),
     JWT_EXPIRY_SECONDS: parseInt(process.env.JWT_EXPIRY_SECONDS ?? "604800", 10), // 7 days
 
-    DATABASE_PATH: process.env.DATABASE_PATH ?? "./data/toolkit.db",
+    DATABASE_PATH: process.env.DATABASE_PATH ??
+      (process.env.RAILWAY_VOLUME_MOUNT_PATH
+        ? `${process.env.RAILWAY_VOLUME_MOUNT_PATH.replace(/^\/\//, "/")}/toolkit.db`
+        : "./data/toolkit.db"),
 
     CORS_ORIGINS: corsOrigins,
 
@@ -83,6 +86,7 @@ export const env = parseEnv();
 export function logEnvSummary(): void {
   console.log(`[ENV] NODE_ENV: ${env.NODE_ENV}`);
   console.log(`[ENV] PORT: ${env.PORT}`);
+  console.log(`[ENV] DATABASE_PATH: ${env.DATABASE_PATH}`);
   console.log(`[ENV] CORS_ORIGINS: ${env.CORS_ORIGINS.join(", ")}`);
   console.log(`[ENV] EMAIL_FROM: ${env.EMAIL_FROM}`);
   console.log(`[ENV] RESEND_API_KEY: ${env.RESEND_API_KEY ? "configured" : "not set (emails disabled)"}`);

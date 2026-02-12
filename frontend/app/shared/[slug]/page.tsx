@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api/client";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -20,9 +19,9 @@ const ARTIFACT_LABELS: Record<string, string> = {
 export default function SharedArtifactPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = use(params);
+  const { slug } = params;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["shared", slug],

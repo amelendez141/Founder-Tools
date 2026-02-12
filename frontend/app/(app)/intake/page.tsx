@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,10 +8,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuthStore, useHasHydrated } from "@/lib/stores/auth-store";
 import { api } from "@/lib/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 const schema = z.object({
   experience_level: z.number().min(1).max(10),
@@ -38,9 +38,12 @@ const businessTypes = [
 
 export default function IntakePage() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const queryClient = useQueryClient();
+  const [error, setError] = useState<string | null>(null);
+  const [isCreatingVenture, setIsCreatingVenture] = useState(false);
 
   const {
     register,
@@ -63,24 +66,37 @@ export default function IntakePage() {
     mutationFn: (data: FormData) => api.updateIntake(user!.id, data),
     onSuccess: async (updatedUser) => {
       setUser(updatedUser);
+      setError(null);
+      setIsCreatingVenture(true);
 
       // Create first venture
       try {
         const venture = await api.createVenture();
         queryClient.invalidateQueries({ queryKey: ["ventures"] });
-        toast.success("Let's get started!");
         router.push(`/ventures/${venture.id}`);
-      } catch (error) {
-        router.push("/dashboard");
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to create venture";
+        setError(`Venture creation failed: ${message}`);
+        setIsCreatingVenture(false);
       }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : "Failed to save intake";
+      setError(`Intake update failed: ${message}`);
     },
   });
 
   const selectedExperience = watch("experience_level");
   const selectedBusinessType = watch("business_type");
+
+  // Wait for hydration before checking auth
+  if (!hasHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   if (!user) {
     router.push("/login");
@@ -188,9 +204,14 @@ export default function IntakePage() {
                 />
               </div>
             </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full" isLoading={isPending}>
-                Continue to your venture
+            <CardFooter className="flex flex-col gap-3">
+              {error && (
+                <div className="w-full p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+              <Button type="submit" className="w-full" isLoading={isPending || isCreatingVenture}>
+                {isCreatingVenture ? "Creating your venture..." : "Continue to your venture"}
               </Button>
             </CardFooter>
           </form>

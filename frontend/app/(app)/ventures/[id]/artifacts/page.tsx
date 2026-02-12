@@ -1,12 +1,11 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type Artifact } from "@/lib/api/client";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
 
 const ARTIFACT_LABELS: Record<string, string> = {
@@ -23,9 +22,9 @@ const ARTIFACT_LABELS: Record<string, string> = {
 export default function ArtifactsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id: ventureId } = use(params);
+  const { id: ventureId } = params;
   const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
   const queryClient = useQueryClient();
 
@@ -39,11 +38,7 @@ export default function ArtifactsPage({
     onSuccess: (data) => {
       const url = `${window.location.origin}/shared/${data.slug}`;
       navigator.clipboard.writeText(url);
-      toast.success("Link copied to clipboard!");
       queryClient.invalidateQueries({ queryKey: ["artifacts", ventureId] });
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 

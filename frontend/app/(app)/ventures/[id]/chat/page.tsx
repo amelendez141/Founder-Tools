@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useVenture } from "@/lib/api/hooks/use-ventures";
 import { useDashboard } from "@/lib/api/hooks/use-dashboard";
 import { useChatHistory, useSendMessage, useRateLimit, useGenerateArtifact } from "@/lib/api/hooks/use-chat";
@@ -14,9 +14,9 @@ import type { ArtifactType } from "@/lib/api/client";
 export default function ChatPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id: ventureId } = use(params);
+  const { id: ventureId } = params;
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
