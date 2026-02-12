@@ -4,7 +4,7 @@ import type { Venture, Artifact } from "../types";
 import { EntityType, ArtifactType, PhaseStatus } from "../types";
 import { GATE_DEFINITIONS } from "../config/gate-definitions";
 
-export const MAX_VENTURES_PER_USER = 3;
+export const MAX_VENTURES_PER_USER = 10;
 
 export class VentureService {
   /** Create a new venture for a user. Initializes 5 phase_progress rows. */

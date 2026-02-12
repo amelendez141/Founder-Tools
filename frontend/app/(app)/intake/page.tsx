@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { useAuthStore, useHasHydrated } from "@/lib/stores/auth-store";
 import { api } from "@/lib/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useVentures } from "@/lib/api/hooks/use-ventures";
 
 const schema = z.object({
   experience_level: z.number().min(1).max(10),
@@ -44,6 +45,14 @@ export default function IntakePage() {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [isCreatingVenture, setIsCreatingVenture] = useState(false);
+  const { data: ventures, isLoading: venturesLoading } = useVentures();
+
+  // Redirect to ventures if user already has some
+  useEffect(() => {
+    if (!venturesLoading && ventures && ventures.length > 0) {
+      router.push(`/ventures/${ventures[0].id}`);
+    }
+  }, [ventures, venturesLoading, router]);
 
   const {
     register,
