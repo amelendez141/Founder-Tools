@@ -41,7 +41,7 @@ function parseEnv(): EnvConfig {
     process.exit(1);
   }
 
-  const corsOriginsRaw = process.env.CORS_ORIGINS ?? "http://localhost:3000,http://localhost:5173";
+  const corsOriginsRaw = process.env.CORS_ORIGINS ?? "http://localhost:3000,http://localhost:5173,https://founder-tools-kz3d.vercel.app";
   const corsOrigins = corsOriginsRaw.split(",").map((s) => s.trim()).filter(Boolean);
 
   return {
