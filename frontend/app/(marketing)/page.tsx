@@ -27,6 +27,7 @@ export default function LandingPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const { sessionToken, messages, remainingMessages, setSessionToken, addMessage, setRemainingMessages } = useTrialStore();
 
@@ -37,7 +38,10 @@ export default function LandingPage() {
   }, [sessionToken, setSessionToken]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Scroll only the chat container, not the whole page
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSend = async () => {
@@ -162,7 +166,7 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  <div className="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-slate-950">
+                  <div ref={chatContainerRef} className="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-slate-950">
                     {messages.length === 0 && (
                       <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         <div className="text-4xl mb-3">💬</div>
