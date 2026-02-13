@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { api } from "@/lib/api/client";
+import { ThemeToggle } from "@/components/theme-provider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -94,18 +95,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </NavLink>
               </nav>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
               {user && (
                 <div className="flex items-center gap-3">
-                  <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 rounded-full">
+                  <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 dark:bg-gray-800/80 rounded-full">
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-medium">
                       {String(user.email).charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-sm text-gray-600 font-medium">{String(user.email)}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">{String(user.email)}</span>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="text-sm text-gray-500 hover:text-gray-700 font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     Sign out
                   </button>

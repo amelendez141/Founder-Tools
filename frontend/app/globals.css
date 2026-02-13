@@ -10,6 +10,15 @@
   --accent: 168, 85, 247;
   --success: 34, 197, 94;
   --warning: 251, 191, 36;
+  --card-bg: 255, 255, 255;
+  --card-border: 226, 232, 240;
+}
+
+.dark {
+  --foreground-rgb: 226, 232, 240;
+  --background-rgb: 15, 23, 42;
+  --card-bg: 30, 41, 59;
+  --card-border: 51, 65, 85;
 }
 
 body {
@@ -19,6 +28,87 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body,
+html.dark body {
+  background: linear-gradient(135deg, rgb(15, 23, 42) 0%, rgb(30, 41, 59) 100%);
+}
+
+/* Dark mode overrides */
+.dark .bg-white {
+  background-color: rgb(30, 41, 59) !important;
+}
+
+.dark .bg-white\/80,
+.dark .bg-white\/90 {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: rgb(51, 65, 85) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: rgb(51, 65, 85) !important;
+}
+
+.dark .border-gray-200,
+.dark .border-gray-200\/80 {
+  border-color: rgb(51, 65, 85) !important;
+}
+
+.dark .border-gray-100 {
+  border-color: rgb(51, 65, 85) !important;
+}
+
+.dark .text-gray-900 {
+  color: rgb(241, 245, 249) !important;
+}
+
+.dark .text-gray-800 {
+  color: rgb(226, 232, 240) !important;
+}
+
+.dark .text-gray-700 {
+  color: rgb(203, 213, 225) !important;
+}
+
+.dark .text-gray-600 {
+  color: rgb(148, 163, 184) !important;
+}
+
+.dark .text-gray-500 {
+  color: rgb(100, 116, 139) !important;
+}
+
+.dark .text-gray-400 {
+  color: rgb(71, 85, 105) !important;
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark input,
+.dark textarea {
+  background-color: rgb(51, 65, 85);
+  border-color: rgb(71, 85, 105);
+  color: rgb(241, 245, 249);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(100, 116, 139);
 }
 
 /* Smooth scrolling */
