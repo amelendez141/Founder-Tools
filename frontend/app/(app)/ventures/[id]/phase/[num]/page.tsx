@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useEnrichedPhases, useUpdateGate, useEvaluateGate } from "@/lib/api/hooks/use-phases";
 import { useVenture, useUpdateVenture, useCreateArtifact } from "@/lib/api/hooks/use-ventures";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
@@ -73,7 +72,7 @@ export default function PhaseDetailPage({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -81,7 +80,7 @@ export default function PhaseDetailPage({
   if (!phase) {
     return (
       <div className="text-center py-12">
-        <h1 className="text-2xl font-bold text-gray-900">Phase not found</h1>
+        <h1 className="text-2xl font-bold text-white">Phase not found</h1>
       </div>
     );
   }
@@ -142,7 +141,6 @@ export default function PhaseDetailPage({
 
   // Phase 2 handlers
   const handleSavePlanning = async () => {
-    // Save all business plan fields
     updateVenture({
       solution_statement: solutionStatement,
       target_customer: targetCustomer,
@@ -156,7 +154,6 @@ export default function PhaseDetailPage({
       advantage: advantage,
     });
 
-    // Create offer statement artifact if provided
     if (offerStatement.trim().length > 0) {
       createArtifact({
         phaseNumber: 2,
@@ -210,26 +207,26 @@ export default function PhaseDetailPage({
   const isSaving = isUpdatingVenture || isCreatingArtifact;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-            <Link href={`/ventures/${ventureId}`} className="hover:text-gray-700">
+          <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+            <Link href={`/ventures/${ventureId}`} className="hover:text-indigo-400 transition-colors">
               Venture
             </Link>
-            <span>/</span>
-            <span>Phase {phaseNumber}</span>
+            <span className="text-gray-600">/</span>
+            <span className="text-indigo-400">Phase {phaseNumber}</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{phase.name}</h1>
-          <p className="text-gray-600 mt-1">{phase.description}</p>
+          <h1 className="text-2xl font-bold text-white">{phase.name}</h1>
+          <p className="text-gray-400 mt-1">{phase.description}</p>
         </div>
         <div
           className={cn(
-            "px-3 py-1 rounded-full text-sm font-medium",
-            phase.status === "COMPLETE" && "bg-green-100 text-green-700",
-            phase.status === "ACTIVE" && "bg-primary-100 text-primary-700",
-            phase.status === "LOCKED" && "bg-gray-100 text-gray-500"
+            "px-4 py-1.5 rounded-full text-sm font-medium border",
+            phase.status === "COMPLETE" && "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+            phase.status === "ACTIVE" && "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+            phase.status === "LOCKED" && "bg-white/5 text-gray-500 border-white/10"
           )}
         >
           {phase.status}
@@ -237,225 +234,203 @@ export default function PhaseDetailPage({
       </div>
 
       {/* Progress */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Progress</CardTitle>
-          <CardDescription>
-            {satisfiedGates} of {totalGates} gates completed
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Progress value={progressPercent} />
-        </CardContent>
-      </Card>
+      <div className="relative">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
+        <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-white">Progress</h3>
+            <span className="text-sm text-gray-400">
+              <span className="text-indigo-400 font-medium">{satisfiedGates}</span> of {totalGates} gates completed
+            </span>
+          </div>
+          <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      </div>
 
-      {/* Phase 1 Discovery Form */}
+      {/* Phase Forms */}
       {phaseNumber === 1 && phase.status === "ACTIVE" && (
-        <Card className="border-primary-200 bg-primary-50/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">🔍</span>
-              Complete Your Discovery
-            </CardTitle>
-            <CardDescription>
-              Fill out this form to complete the auto-evaluated gates
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Problem Statement
-                <span className="text-gray-400 font-normal ml-2">(minimum 20 characters)</span>
-              </label>
-              <textarea
-                value={problemStatement}
-                onChange={(e) => setProblemStatement(e.target.value)}
-                placeholder="What problem are you solving? Describe the pain point..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[100px]"
-              />
-              <p className={cn("text-xs mt-1", problemStatement.length >= 20 ? "text-green-600" : "text-gray-500")}>
-                {problemStatement.length}/20 characters {problemStatement.length >= 20 && "✓"}
-              </p>
-            </div>
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+                <span className="text-xl">🔍</span>
+                Complete Your Discovery
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">Fill out this form to complete the auto-evaluated gates</p>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Competitors / Existing Solutions
-                <span className="text-gray-400 font-normal ml-2">(minimum 3 required)</span>
-              </label>
-              <div className="space-y-2">
-                {competitors.map((competitor, index) => (
-                  <div key={index} className="flex gap-2">
-                    <input
-                      type="text"
-                      value={competitor}
-                      onChange={(e) => handleCompetitorChange(index, e.target.value)}
-                      placeholder={`Competitor ${index + 1}`}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    />
-                    {competitors.length > 3 && (
-                      <button onClick={() => removeCompetitor(index)} className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg">
-                        ✕
-                      </button>
-                    )}
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Problem Statement
+                    <span className="text-gray-500 font-normal ml-2">(minimum 20 characters)</span>
+                  </label>
+                  <textarea
+                    value={problemStatement}
+                    onChange={(e) => setProblemStatement(e.target.value)}
+                    placeholder="What problem are you solving? Describe the pain point..."
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[100px]"
+                  />
+                  <p className={cn("text-xs mt-1", problemStatement.length >= 20 ? "text-emerald-400" : "text-gray-500")}>
+                    {problemStatement.length}/20 characters {problemStatement.length >= 20 && "✓"}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Competitors / Existing Solutions
+                    <span className="text-gray-500 font-normal ml-2">(minimum 3 required)</span>
+                  </label>
+                  <div className="space-y-2">
+                    {competitors.map((competitor, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={competitor}
+                          onChange={(e) => handleCompetitorChange(index, e.target.value)}
+                          placeholder={`Competitor ${index + 1}`}
+                          className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                        />
+                        {competitors.length > 3 && (
+                          <button onClick={() => removeCompetitor(index)} className="px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <button onClick={addCompetitor} className="mt-2 text-sm text-primary-600 hover:text-primary-700">
-                + Add another competitor
-              </button>
-              <p className={cn("text-xs mt-1", competitors.filter((c) => c.trim()).length >= 3 ? "text-green-600" : "text-gray-500")}>
-                {competitors.filter((c) => c.trim()).length}/3 competitors {competitors.filter((c) => c.trim()).length >= 3 && "✓"}
-              </p>
-            </div>
+                  <button onClick={addCompetitor} className="mt-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors">
+                    + Add another competitor
+                  </button>
+                  <p className={cn("text-xs mt-1", competitors.filter((c) => c.trim()).length >= 3 ? "text-emerald-400" : "text-gray-500")}>
+                    {competitors.filter((c) => c.trim()).length}/3 competitors {competitors.filter((c) => c.trim()).length >= 3 && "✓"}
+                  </p>
+                </div>
 
-            <div className="flex items-center gap-4">
-              <Button onClick={handleSaveDiscovery} disabled={!canSaveDiscovery || isSaving} className="bg-gradient-primary">
-                {isSaving ? "Saving..." : "Save & Evaluate"}
-              </Button>
-              {formSaved && <span className="text-green-600 text-sm">✓ Saved!</span>}
+                <div className="flex items-center gap-4">
+                  <Button
+                    onClick={handleSaveDiscovery}
+                    disabled={!canSaveDiscovery || isSaving}
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0"
+                  >
+                    {isSaving ? "Saving..." : "Save & Evaluate"}
+                  </Button>
+                  {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Phase 2 Planning Form */}
       {phaseNumber === 2 && phase.status === "ACTIVE" && (
-        <Card className="border-primary-200 bg-primary-50/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">📋</span>
-              Complete Your Business Plan
-            </CardTitle>
-            <CardDescription>
-              Fill out all fields to complete Phase 2
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Solution Statement</label>
-                <textarea
-                  value={solutionStatement}
-                  onChange={(e) => setSolutionStatement(e.target.value)}
-                  placeholder="How does your product/service solve the problem?"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Target Customer</label>
-                <textarea
-                  value={targetCustomer}
-                  onChange={(e) => setTargetCustomer(e.target.value)}
-                  placeholder="Who is your ideal customer? Be specific."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Offer Description</label>
-                <textarea
-                  value={offerDescription}
-                  onChange={(e) => setOfferDescription(e.target.value)}
-                  placeholder="What exactly are you offering?"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Revenue Model</label>
-                <textarea
-                  value={revenueModel}
-                  onChange={(e) => setRevenueModel(e.target.value)}
-                  placeholder="How will you make money? (subscription, one-time, etc.)"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Distribution Channel</label>
-                <textarea
-                  value={distributionChannel}
-                  onChange={(e) => setDistributionChannel(e.target.value)}
-                  placeholder="How will customers find and buy from you?"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Competitive Advantage</label>
-                <textarea
-                  value={advantage}
-                  onChange={(e) => setAdvantage(e.target.value)}
-                  placeholder="What makes you different from competitors?"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-                />
-              </div>
-            </div>
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+                <span className="text-xl">📋</span>
+                Complete Your Business Plan
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">Fill out all fields to complete Phase 2</p>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Startup Costs ($)</label>
-                <input
-                  type="number"
-                  value={startupCosts}
-                  onChange={(e) => setStartupCosts(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Costs ($)</label>
-                <input
-                  type="number"
-                  value={monthlyCosts}
-                  onChange={(e) => setMonthlyCosts(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-            </div>
+              <div className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  {[
+                    { label: "Solution Statement", value: solutionStatement, setValue: setSolutionStatement, placeholder: "How does your product/service solve the problem?" },
+                    { label: "Target Customer", value: targetCustomer, setValue: setTargetCustomer, placeholder: "Who is your ideal customer? Be specific." },
+                    { label: "Offer Description", value: offerDescription, setValue: setOfferDescription, placeholder: "What exactly are you offering?" },
+                    { label: "Revenue Model", value: revenueModel, setValue: setRevenueModel, placeholder: "How will you make money? (subscription, one-time, etc.)" },
+                    { label: "Distribution Channel", value: distributionChannel, setValue: setDistributionChannel, placeholder: "How will customers find and buy from you?" },
+                    { label: "Competitive Advantage", value: advantage, setValue: setAdvantage, placeholder: "What makes you different from competitors?" },
+                  ].map((field) => (
+                    <div key={field.label}>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">{field.label}</label>
+                      <textarea
+                        value={field.value}
+                        onChange={(e) => field.setValue(e.target.value)}
+                        placeholder={field.placeholder}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
+                      />
+                    </div>
+                  ))}
+                </div>
 
-            <div className="border-t pt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Offer Statement
-                <span className="text-gray-400 font-normal ml-2">(Your pitch in one sentence)</span>
-              </label>
-              <textarea
-                value={offerStatement}
-                onChange={(e) => setOfferStatement(e.target.value)}
-                placeholder="We help [target customer] solve [problem] by [solution] so they can [benefit]."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-              />
-            </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Startup Costs ($)</label>
+                    <input
+                      type="number"
+                      value={startupCosts}
+                      onChange={(e) => setStartupCosts(e.target.value)}
+                      placeholder="0"
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Monthly Costs ($)</label>
+                    <input
+                      type="number"
+                      value={monthlyCosts}
+                      onChange={(e) => setMonthlyCosts(e.target.value)}
+                      placeholder="0"
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                    />
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-4">
-              <Button onClick={handleSavePlanning} disabled={!canSavePlanning || isSaving} className="bg-gradient-primary">
-                {isSaving ? "Saving..." : "Save & Evaluate"}
-              </Button>
-              {formSaved && <span className="text-green-600 text-sm">✓ Saved!</span>}
-              {!canSavePlanning && (
-                <span className="text-gray-500 text-sm">Fill all fields to continue</span>
-              )}
+                <div className="border-t border-white/10 pt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Offer Statement
+                    <span className="text-gray-500 font-normal ml-2">(Your pitch in one sentence)</span>
+                  </label>
+                  <textarea
+                    value={offerStatement}
+                    onChange={(e) => setOfferStatement(e.target.value)}
+                    placeholder="We help [target customer] solve [problem] by [solution] so they can [benefit]."
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
+                  />
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <Button
+                    onClick={handleSavePlanning}
+                    disabled={!canSavePlanning || isSaving}
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0"
+                  >
+                    {isSaving ? "Saving..." : "Save & Evaluate"}
+                  </Button>
+                  {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                  {!canSavePlanning && <span className="text-gray-500 text-sm">Fill all fields to continue</span>}
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Phase 3 Formation Form */}
       {phaseNumber === 3 && phase.status === "ACTIVE" && (
-        <Card className="border-primary-200 bg-primary-50/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">🏗️</span>
-              Business Formation
-            </CardTitle>
-            <CardDescription>
-              Choose your business entity type (or skip for now)
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Entity Type
-              </label>
-              <div className="grid gap-3 md:grid-cols-2">
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+                <span className="text-xl">🏗️</span>
+                Business Formation
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">Choose your business entity type (or skip for now)</p>
+
+              <div className="grid gap-3 md:grid-cols-2 mb-6">
                 {[
                   { value: "SOLE_PROP", label: "Sole Proprietorship", desc: "Simplest structure, no formal registration needed" },
                   { value: "LLC", label: "LLC", desc: "Limited liability protection, flexible taxation" },
@@ -466,121 +441,118 @@ export default function PhaseDetailPage({
                     key={option.value}
                     onClick={() => setEntityType(option.value)}
                     className={cn(
-                      "p-4 rounded-lg border-2 text-left transition-all",
+                      "p-4 rounded-xl border-2 text-left transition-all",
                       entityType === option.value
-                        ? "border-primary-500 bg-primary-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        ? "border-indigo-500 bg-indigo-500/10"
+                        : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
                     )}
                   >
-                    <div className="font-medium text-gray-900">{option.label}</div>
-                    <div className="text-sm text-gray-500 mt-1">{option.desc}</div>
+                    <div className="font-medium text-white">{option.label}</div>
+                    <div className="text-sm text-gray-400 mt-1">{option.desc}</div>
                   </button>
                 ))}
               </div>
-            </div>
 
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={handleSaveFormation}
-                disabled={isSaving}
-                className="bg-gradient-primary"
-              >
-                {isSaving ? "Saving..." : "Save & Evaluate"}
-              </Button>
-              {formSaved && <span className="text-green-600 text-sm">✓ Saved!</span>}
+              <div className="flex items-center gap-4">
+                <Button
+                  onClick={handleSaveFormation}
+                  disabled={isSaving}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0"
+                >
+                  {isSaving ? "Saving..." : "Save & Evaluate"}
+                </Button>
+                {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Phase 5 Scale Form */}
       {phaseNumber === 5 && phase.status === "ACTIVE" && (
-        <Card className="border-primary-200 bg-primary-50/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">📈</span>
-              Create Your 90-Day Growth Plan
-            </CardTitle>
-            <CardDescription>
-              Define your growth strategy for the next 90 days
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Growth Goal
-              </label>
-              <textarea
-                value={growthGoal}
-                onChange={(e) => setGrowthGoal(e.target.value)}
-                placeholder="What's your main growth goal for the next 90 days? (e.g., Reach $10k MRR, Get 100 customers)"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[80px]"
-              />
-            </div>
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+                <span className="text-xl">📈</span>
+                Create Your 90-Day Growth Plan
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">Define your growth strategy for the next 90 days</p>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Growth Strategy
-              </label>
-              <textarea
-                value={growthStrategy}
-                onChange={(e) => setGrowthStrategy(e.target.value)}
-                placeholder="How will you achieve this goal? What channels and tactics will you use?"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[100px]"
-              />
-            </div>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Growth Goal</label>
+                  <textarea
+                    value={growthGoal}
+                    onChange={(e) => setGrowthGoal(e.target.value)}
+                    placeholder="What's your main growth goal for the next 90 days? (e.g., Reach $10k MRR, Get 100 customers)"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Key Milestones
-                <span className="text-gray-400 font-normal ml-2">(one per line)</span>
-              </label>
-              <textarea
-                value={keyMilestones}
-                onChange={(e) => setKeyMilestones(e.target.value)}
-                placeholder="Week 1-2: Launch marketing campaign&#10;Week 3-4: Reach 25 customers&#10;Week 5-8: Hit $5k revenue&#10;Week 9-12: Scale to $10k"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[120px]"
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Growth Strategy</label>
+                  <textarea
+                    value={growthStrategy}
+                    onChange={(e) => setGrowthStrategy(e.target.value)}
+                    placeholder="How will you achieve this goal? What channels and tactics will you use?"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[100px]"
+                  />
+                </div>
 
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={handleSaveScale}
-                disabled={!canSaveScale || isSaving}
-                className="bg-gradient-primary"
-              >
-                {isSaving ? "Saving..." : "Generate Growth Plan"}
-              </Button>
-              {formSaved && <span className="text-green-600 text-sm">✓ Saved!</span>}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Key Milestones
+                    <span className="text-gray-500 font-normal ml-2">(one per line)</span>
+                  </label>
+                  <textarea
+                    value={keyMilestones}
+                    onChange={(e) => setKeyMilestones(e.target.value)}
+                    placeholder={"Week 1-2: Launch marketing campaign\nWeek 3-4: Reach 25 customers\nWeek 5-8: Hit $5k revenue\nWeek 9-12: Scale to $10k"}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[120px]"
+                  />
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <Button
+                    onClick={handleSaveScale}
+                    disabled={!canSaveScale || isSaving}
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0"
+                  >
+                    {isSaving ? "Saving..." : "Generate Growth Plan"}
+                  </Button>
+                  {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Gate Criteria */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Gate Criteria</CardTitle>
-          <CardDescription>
-            Complete all gates to advance to the next phase
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="relative">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-30" />
+        <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
+          <h3 className="text-lg font-semibold text-white mb-2">Gate Criteria</h3>
+          <p className="text-gray-400 text-sm mb-6">Complete all gates to advance to the next phase</p>
+
           <div className="space-y-3">
             {phase.gate_criteria.map((gate) => (
               <div
                 key={gate.key}
                 className={cn(
-                  "flex items-center gap-3 p-3 rounded-lg border",
-                  gate.satisfied ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"
+                  "flex items-center gap-3 p-4 rounded-xl border transition-all",
+                  gate.satisfied ? "bg-emerald-500/10 border-emerald-500/30" : "bg-white/[0.02] border-white/10"
                 )}
               >
                 <button
                   onClick={() => handleToggleGate(gate.key, gate.satisfied, gate.gate_type)}
                   disabled={gate.gate_type === "auto" || isUpdating || phase.status === "LOCKED"}
                   className={cn(
-                    "w-6 h-6 rounded border-2 flex items-center justify-center transition-colors",
-                    gate.satisfied ? "bg-green-500 border-green-500 text-white" : "border-gray-300 hover:border-gray-400",
+                    "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
+                    gate.satisfied ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 hover:border-gray-400",
                     gate.gate_type === "auto" && !gate.satisfied && "cursor-not-allowed opacity-60"
                   )}
                 >
@@ -591,7 +563,7 @@ export default function PhaseDetailPage({
                   )}
                 </button>
                 <div className="flex-1">
-                  <p className={cn("font-medium", gate.satisfied ? "text-green-700" : "text-gray-700")}>
+                  <p className={cn("font-medium", gate.satisfied ? "text-emerald-400" : "text-gray-300")}>
                     {gate.label}
                   </p>
                   <p className="text-xs text-gray-500">
@@ -606,35 +578,37 @@ export default function PhaseDetailPage({
 
           {phase.status === "ACTIVE" && (
             <div className="mt-6 flex gap-3">
-              <Button onClick={handleEvaluate} disabled={isEvaluating} variant="outline">
+              <Button onClick={handleEvaluate} disabled={isEvaluating} variant="outline" className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
                 {isEvaluating ? "Evaluating..." : "Re-evaluate Gates"}
               </Button>
               <Link href={`/ventures/${ventureId}/chat`}>
-                <Button variant="outline">Get AI Help</Button>
+                <Button variant="outline" className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
+                  Get AI Help
+                </Button>
               </Link>
             </div>
           )}
 
           {phase.status === "COMPLETE" && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+            <div className="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
                   <span className="text-2xl">🎉</span>
                   <div>
-                    <p className="font-medium text-green-800">Phase Complete!</p>
-                    <p className="text-sm text-green-600">Great job! You've completed all the gates.</p>
+                    <p className="font-medium text-emerald-400">Phase Complete!</p>
+                    <p className="text-sm text-emerald-400/70">Great job! You've completed all the gates.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   {phaseNumber < 5 ? (
                     <Link href={`/ventures/${ventureId}/phase/${phaseNumber + 1}`}>
-                      <Button className="bg-gradient-primary">
+                      <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 border-0">
                         Continue to Phase {phaseNumber + 1} →
                       </Button>
                     </Link>
                   ) : (
                     <Link href={`/ventures/${ventureId}`}>
-                      <Button className="bg-gradient-primary">
+                      <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 border-0">
                         Back to Dashboard
                       </Button>
                     </Link>
@@ -643,42 +617,38 @@ export default function PhaseDetailPage({
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Guide Content */}
       {phase.guide_content && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Phase Guide</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="prose prose-sm max-w-none">
-              <p className="whitespace-pre-wrap text-gray-700">{phase.guide_content}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-30" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Phase Guide</h3>
+            <p className="whitespace-pre-wrap text-gray-300">{phase.guide_content}</p>
+          </div>
+        </div>
       )}
 
       {/* Tool Recommendations */}
       {phase.tool_recommendations && phase.tool_recommendations.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Recommended Tools</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-30" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Recommended Tools</h3>
             <ul className="space-y-2">
               {phase.tool_recommendations.map((tool, index) => (
-                <li key={index} className="flex items-center gap-2 text-gray-700">
-                  <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li key={index} className="flex items-center gap-2 text-gray-300">
+                  <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   {tool}
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

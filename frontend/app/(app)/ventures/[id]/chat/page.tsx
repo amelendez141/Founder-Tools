@@ -4,10 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { useVenture } from "@/lib/api/hooks/use-ventures";
 import { useDashboard } from "@/lib/api/hooks/use-dashboard";
 import { useChatHistory, useSendMessage, useRateLimit, useGenerateArtifact } from "@/lib/api/hooks/use-chat";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils/cn";
 import type { ArtifactType } from "@/lib/api/client";
 
@@ -66,133 +64,144 @@ export default function ChatPage({
   );
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col">
+    <div className="h-[calc(100vh-12rem)] flex flex-col animate-fade-in-up">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">AI Copilot</h1>
-          <p className="text-sm text-gray-600">
-            Phase {currentPhase}: {dashboard?.current_phase_name}
+          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            <span className="text-2xl">🤖</span>
+            AI Copilot
+          </h1>
+          <p className="text-sm text-gray-400">
+            Phase {currentPhase}: <span className="text-indigo-400">{dashboard?.current_phase_name}</span>
           </p>
         </div>
         {rateLimit && (
           <div className="text-right">
-            <div className="text-sm text-gray-600">
-              {rateLimit.remaining_today}/{rateLimit.messages_limit} remaining
+            <div className="text-sm text-gray-400">
+              <span className="text-indigo-400 font-medium">{rateLimit.remaining_today}</span>/{rateLimit.messages_limit} remaining
             </div>
-            <Progress
-              value={
-                ((rateLimit.messages_limit - rateLimit.remaining_today) /
-                  rateLimit.messages_limit) *
-                100
-              }
-              className="w-32 mt-1"
-            />
+            <div className="w-32 h-2 bg-white/5 rounded-full mt-2 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all"
+                style={{
+                  width: `${((rateLimit.messages_limit - rateLimit.remaining_today) / rateLimit.messages_limit) * 100}%`
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
 
-      {/* Chat Messages */}
-      <Card className="flex-1 flex flex-col overflow-hidden">
-        <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-          {historyLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin h-6 w-6 border-2 border-primary-600 border-t-transparent rounded-full" />
-            </div>
-          ) : chatHistory?.messages.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <p>Start a conversation with your AI coach</p>
-              <p className="text-sm mt-2">
-                Ask questions about your venture or generate artifacts
-              </p>
-            </div>
-          ) : (
-            chatHistory?.messages.map((msg, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "flex",
-                  msg.role === "user" ? "justify-end" : "justify-start"
-                )}
-              >
+      {/* Chat Container */}
+      <div className="relative flex-1 flex flex-col overflow-hidden">
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl blur-xl" />
+        <div className="relative flex-1 flex flex-col bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {historyLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+              </div>
+            ) : chatHistory?.messages.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-5xl mb-4">💬</div>
+                <p className="text-gray-400">Start a conversation with your AI coach</p>
+                <p className="text-sm mt-2 text-gray-500">
+                  Ask questions about your venture or generate artifacts
+                </p>
+              </div>
+            ) : (
+              chatHistory?.messages.map((msg, index) => (
                 <div
+                  key={index}
                   className={cn(
-                    "max-w-[80%] rounded-lg px-4 py-2",
-                    msg.role === "user"
-                      ? "bg-primary-600 text-white"
-                      : "bg-gray-100 text-gray-900"
+                    "flex",
+                    msg.role === "user" ? "justify-end" : "justify-start"
                   )}
                 >
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                  <p
+                  <div
                     className={cn(
-                      "text-xs mt-1",
-                      msg.role === "user" ? "text-primary-200" : "text-gray-500"
+                      "max-w-[80%] rounded-xl px-4 py-3",
+                      msg.role === "user"
+                        ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                        : "bg-white/5 text-gray-200 border border-white/10"
                     )}
                   >
-                    {new Date(msg.timestamp).toLocaleTimeString()}
-                  </p>
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                    <p
+                      className={cn(
+                        "text-xs mt-2",
+                        msg.role === "user" ? "text-indigo-200" : "text-gray-500"
+                      )}
+                    >
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+            {isSending && (
+              <div className="flex justify-start">
+                <div className="bg-white/5 rounded-xl px-4 py-3 border border-white/10">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" />
+                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                  </div>
                 </div>
               </div>
-            ))
-          )}
-          {isSending && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-lg px-4 py-2">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </CardContent>
-
-        {/* Input Area */}
-        <div className="border-t p-4">
-          {/* Artifact Generation Buttons */}
-          {availableArtifacts.length > 0 && (
-            <div className="flex gap-2 mb-3 flex-wrap">
-              {availableArtifacts.map((artifact) => (
-                <Button
-                  key={artifact.type}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGenerate(artifact.type)}
-                  disabled={isGenerating || (rateLimit?.remaining_today ?? 0) < 3}
-                >
-                  {isGenerating ? "Generating..." : `Generate ${artifact.label}`}
-                </Button>
-              ))}
-            </div>
-          )}
-
-          <div className="flex gap-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              disabled={isSending || (rateLimit?.remaining_today ?? 0) < 1}
-            />
-            <Button
-              onClick={handleSend}
-              disabled={isSending || !message.trim() || (rateLimit?.remaining_today ?? 0) < 1}
-              isLoading={isSending}
-            >
-              Send
-            </Button>
+            )}
+            <div ref={messagesEndRef} />
           </div>
-          {rateLimit && rateLimit.remaining_today < 1 && (
-            <p className="text-sm text-red-500 mt-2">
-              Daily limit reached. Resets at{" "}
-              {new Date(rateLimit.resets_at).toLocaleTimeString()}
-            </p>
-          )}
+
+          {/* Input Area */}
+          <div className="border-t border-white/10 p-4 bg-white/[0.02]">
+            {/* Artifact Generation Buttons */}
+            {availableArtifacts.length > 0 && (
+              <div className="flex gap-2 mb-3 flex-wrap">
+                {availableArtifacts.map((artifact) => (
+                  <Button
+                    key={artifact.type}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleGenerate(artifact.type)}
+                    disabled={isGenerating || (rateLimit?.remaining_today ?? 0) < 3}
+                    className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-indigo-500/50"
+                  >
+                    {isGenerating ? "Generating..." : `Generate ${artifact.label}`}
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message..."
+                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                disabled={isSending || (rateLimit?.remaining_today ?? 0) < 1}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+              />
+              <Button
+                onClick={handleSend}
+                disabled={isSending || !message.trim() || (rateLimit?.remaining_today ?? 0) < 1}
+                isLoading={isSending}
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0"
+              >
+                Send
+              </Button>
+            </div>
+            {rateLimit && rateLimit.remaining_today < 1 && (
+              <p className="text-sm text-red-400 mt-2">
+                Daily limit reached. Resets at{" "}
+                {new Date(rateLimit.resets_at).toLocaleTimeString()}
+              </p>
+            )}
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

@@ -7,7 +7,6 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useAuthStore, useHasHydrated } from "@/lib/stores/auth-store";
 import { api } from "@/lib/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,9 +30,9 @@ const experienceLevels = [
 ];
 
 const businessTypes = [
-  { value: "ONLINE", label: "Online", description: "Digital products, SaaS, e-commerce" },
-  { value: "LOCAL", label: "Local", description: "Physical location, local services" },
-  { value: "HYBRID", label: "Hybrid", description: "Mix of online and local" },
+  { value: "ONLINE", label: "Online", description: "Digital products, SaaS, e-commerce", icon: "💻" },
+  { value: "LOCAL", label: "Local", description: "Physical location, local services", icon: "🏪" },
+  { value: "HYBRID", label: "Hybrid", description: "Mix of online and local", icon: "🌐" },
 ];
 
 export default function IntakePage() {
@@ -92,8 +91,8 @@ export default function IntakePage() {
   // Wait for hydration before checking auth
   if (!hasHydrated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -104,118 +103,151 @@ export default function IntakePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="py-8 animate-fade-in-up">
       <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Tell us about yourself</CardTitle>
-            <CardDescription>
-              This helps us personalize your entrepreneurial journey
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit((data) => updateIntake(data))}>
-            <CardContent className="space-y-8">
-              {/* Experience Level */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Where are you in your entrepreneurial journey?
-                </label>
-                <div className="space-y-2">
-                  {experienceLevels.map((level) => (
-                    <button
-                      key={level.value}
-                      type="button"
-                      onClick={() => setValue("experience_level", level.value)}
-                      className={`w-full p-3 text-left rounded-lg border transition-colors ${
-                        selectedExperience === level.value
-                          ? "border-primary-500 bg-primary-50 text-primary-700"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      {level.label}
-                    </button>
-                  ))}
+        <div className="relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur-xl" />
+          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+            {/* Header */}
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="p-8 text-center border-b border-white/10">
+              <div className="relative inline-block mb-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-50" />
+                <div className="relative w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 mx-auto">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold text-white mb-2">Tell us about yourself</h1>
+              <p className="text-gray-400">This helps us personalize your entrepreneurial journey</p>
+            </div>
+
+            <form onSubmit={handleSubmit((data) => updateIntake(data))}>
+              <div className="p-8 space-y-8">
+                {/* Experience Level */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    Where are you in your entrepreneurial journey?
+                  </label>
+                  <div className="space-y-2">
+                    {experienceLevels.map((level) => (
+                      <button
+                        key={level.value}
+                        type="button"
+                        onClick={() => setValue("experience_level", level.value)}
+                        className={`w-full p-4 text-left rounded-xl border transition-all duration-300 ${
+                          selectedExperience === level.value
+                            ? "border-indigo-500 bg-indigo-500/10 text-white"
+                            : "border-white/10 hover:border-white/20 text-gray-300 hover:bg-white/[0.02]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            selectedExperience === level.value ? "border-indigo-500 bg-indigo-500" : "border-gray-500"
+                          }`}>
+                            {selectedExperience === level.value && (
+                              <div className="w-2 h-2 rounded-full bg-white" />
+                            )}
+                          </div>
+                          {level.label}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Business Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    What type of business are you building?
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {businessTypes.map((type) => (
+                      <button
+                        key={type.value}
+                        type="button"
+                        onClick={() => setValue("business_type", type.value as "ONLINE" | "LOCAL" | "HYBRID")}
+                        className={`p-4 text-center rounded-xl border transition-all duration-300 ${
+                          selectedBusinessType === type.value
+                            ? "border-indigo-500 bg-indigo-500/10"
+                            : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
+                        }`}
+                      >
+                        <div className="text-2xl mb-2">{type.icon}</div>
+                        <div className="font-medium text-white">{type.label}</div>
+                        <div className="text-xs text-gray-400 mt-1">{type.description}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Budget */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Starting budget ($)
+                  </label>
+                  <Input
+                    type="number"
+                    min={0}
+                    {...register("budget", { valueAsNumber: true })}
+                    error={errors.budget?.message}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+                  />
+                </div>
+
+                {/* Income Goal */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Monthly income goal ($)
+                  </label>
+                  <Input
+                    type="number"
+                    min={0}
+                    {...register("income_goal", { valueAsNumber: true })}
+                    error={errors.income_goal?.message}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+                  />
+                </div>
+
+                {/* Weekly Hours */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Hours per week you can dedicate
+                  </label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={168}
+                    {...register("weekly_hours", { valueAsNumber: true })}
+                    error={errors.weekly_hours?.message}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+                  />
                 </div>
               </div>
 
-              {/* Business Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  What type of business are you building?
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {businessTypes.map((type) => (
-                    <button
-                      key={type.value}
-                      type="button"
-                      onClick={() => setValue("business_type", type.value as "ONLINE" | "LOCAL" | "HYBRID")}
-                      className={`p-4 text-center rounded-lg border transition-colors ${
-                        selectedBusinessType === type.value
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="font-medium">{type.label}</div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {type.description}
-                      </div>
-                    </button>
-                  ))}
-                </div>
+              <div className="p-8 pt-0 space-y-4">
+                {error && (
+                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-3">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    {error}
+                  </div>
+                )}
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold py-4 rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300 border-0"
+                  isLoading={isPending || isCreatingVenture}
+                >
+                  {isCreatingVenture ? "Creating your venture..." : "Continue to your venture"}
+                </Button>
               </div>
-
-              {/* Budget */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Starting budget ($)
-                </label>
-                <Input
-                  type="number"
-                  min={0}
-                  {...register("budget", { valueAsNumber: true })}
-                  error={errors.budget?.message}
-                />
-              </div>
-
-              {/* Income Goal */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Monthly income goal ($)
-                </label>
-                <Input
-                  type="number"
-                  min={0}
-                  {...register("income_goal", { valueAsNumber: true })}
-                  error={errors.income_goal?.message}
-                />
-              </div>
-
-              {/* Weekly Hours */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Hours per week you can dedicate
-                </label>
-                <Input
-                  type="number"
-                  min={1}
-                  max={168}
-                  {...register("weekly_hours", { valueAsNumber: true })}
-                  error={errors.weekly_hours?.message}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-3">
-              {error && (
-                <div className="w-full p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                  {error}
-                </div>
-              )}
-              <Button type="submit" className="w-full" isLoading={isPending || isCreatingVenture}>
-                {isCreatingVenture ? "Creating your venture..." : "Continue to your venture"}
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

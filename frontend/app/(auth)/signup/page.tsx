@@ -37,7 +37,6 @@ export default function SignupPage() {
   const onSubmit = (data: FormData) => {
     setError(null);
 
-    // If there's a trial session, store it for claiming after registration
     if (sessionToken) {
       localStorage.setItem("pending_trial_claim", sessionToken);
     }
@@ -56,91 +55,97 @@ export default function SignupPage() {
     <div className="animate-fade-in-up">
       {/* Logo and branding */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-vibrant shadow-lg shadow-indigo-500/30 mb-4 animate-bounce-subtle">
-          <svg
-            className="h-8 w-8 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
-          </svg>
+        <div className="relative inline-block">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur-xl opacity-50" />
+          <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30 mb-4">
+            <svg
+              className="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+          </div>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
-        <p className="text-gray-500">Start your entrepreneurial journey today</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Create your account</h1>
+        <p className="text-gray-400">Start your entrepreneurial journey today</p>
       </div>
 
       {/* Card */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {error && (
-            <div className="p-4 text-sm text-red-600 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3 animate-fade-in">
-              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
-                <svg className="w-3 h-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+      <div className="relative">
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur-xl" />
+        <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {error && (
+              <div className="p-4 text-sm text-red-400 bg-red-500/10 rounded-xl border border-red-500/20 flex items-center gap-3 animate-fade-in">
+                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {error}
               </div>
-              {error}
+            )}
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Email</label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                error={errors.email?.message}
+                className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
+                {...registerField("email")}
+              />
             </div>
-          )}
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Email</label>
-            <Input
-              type="email"
-              placeholder="you@example.com"
-              error={errors.email?.message}
-              className="h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
-              {...registerField("email")}
-            />
-          </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Password</label>
+              <Input
+                type="password"
+                placeholder="Create a strong password"
+                error={errors.password?.message}
+                className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
+                {...registerField("password")}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Password</label>
-            <Input
-              type="password"
-              placeholder="Create a strong password"
-              error={errors.password?.message}
-              className="h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
-              {...registerField("password")}
-            />
-          </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Confirm Password</label>
+              <Input
+                type="password"
+                placeholder="Confirm your password"
+                error={errors.confirmPassword?.message}
+                className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
+                {...registerField("confirmPassword")}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Confirm Password</label>
-            <Input
-              type="password"
-              placeholder="Confirm your password"
-              error={errors.confirmPassword?.message}
-              className="h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all"
-              {...registerField("confirmPassword")}
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full h-12 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300"
-            isLoading={isPending}
-          >
-            Create account
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+            <Button
+              type="submit"
+              className="w-full h-12 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300 border-0"
+              isLoading={isPending}
             >
-              Sign in
-            </Link>
-          </p>
+              Create account
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-400">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+              >
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -151,7 +156,7 @@ export default function SignupPage() {
           { icon: "🤖", label: "AI-Powered" },
           { icon: "📄", label: "Business Plan" },
         ].map((feature) => (
-          <div key={feature.label} className="text-xs text-gray-400">
+          <div key={feature.label} className="text-xs text-gray-500">
             <div className="text-lg mb-1">{feature.icon}</div>
             {feature.label}
           </div>
