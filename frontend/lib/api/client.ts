@@ -2,7 +2,8 @@
  * API Client for Founder Toolkit Backend
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+// Use relative URL for API calls - Next.js rewrites will proxy to Railway backend
+const API_URL = "/api";
 
 interface ApiResponse<T> {
   data: T;
