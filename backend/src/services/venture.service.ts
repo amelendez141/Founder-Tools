@@ -4,14 +4,15 @@ import type { Venture, Artifact } from "../types";
 import { EntityType, ArtifactType, PhaseStatus } from "../types";
 import { GATE_DEFINITIONS } from "../config/gate-definitions";
 
-export const MAX_VENTURES_PER_USER = 3;
+// Free tier: Allow up to 10 ventures per user
+export const MAX_VENTURES_PER_USER = 10;
 
 export class VentureService {
   /** Create a new venture for a user. Initializes 5 phase_progress rows. */
   createVenture(userId: string): Venture {
     const db = getDb();
 
-    // V2: Allow up to 3 ventures per user (free tier)
+    // V2: Allow up to 10 ventures per user (free tier)
     const existingCount = db.queryOne<{ cnt: number }>(
       `SELECT COUNT(*) as cnt FROM ventures WHERE user_id = ?`,
       [userId]
