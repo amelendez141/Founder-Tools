@@ -106,28 +106,26 @@ export default function IntakePage() {
     <div className="py-8 animate-fade-in-up">
       <div className="max-w-2xl mx-auto">
         <div className="relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur-xl" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+          <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-            <div className="p-8 text-center border-b border-white/10">
+            <div className="p-8 text-center border-b border-gray-200">
               <div className="relative inline-block mb-4">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-50" />
                 <div className="relative w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 mx-auto">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">Tell us about yourself</h1>
-              <p className="text-gray-400">This helps us personalize your entrepreneurial journey</p>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Tell us about yourself</h1>
+              <p className="text-gray-600">This helps us personalize your entrepreneurial journey</p>
             </div>
 
             <form onSubmit={handleSubmit((data) => updateIntake(data))}>
               <div className="p-8 space-y-8">
                 {/* Experience Level */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Where are you in your entrepreneurial journey?
                   </label>
                   <div className="space-y-2">
@@ -138,13 +136,13 @@ export default function IntakePage() {
                         onClick={() => setValue("experience_level", level.value)}
                         className={`w-full p-4 text-left rounded-xl border transition-all duration-300 ${
                           selectedExperience === level.value
-                            ? "border-indigo-500 bg-indigo-500/10 text-white"
-                            : "border-white/10 hover:border-white/20 text-gray-300 hover:bg-white/[0.02]"
+                            ? "border-indigo-500 bg-indigo-50 text-gray-900"
+                            : "border-gray-200 hover:border-gray-300 text-gray-700 hover:bg-gray-50"
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                            selectedExperience === level.value ? "border-indigo-500 bg-indigo-500" : "border-gray-500"
+                            selectedExperience === level.value ? "border-indigo-500 bg-indigo-500" : "border-gray-400"
                           }`}>
                             {selectedExperience === level.value && (
                               <div className="w-2 h-2 rounded-full bg-white" />
@@ -159,7 +157,7 @@ export default function IntakePage() {
 
                 {/* Business Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     What type of business are you building?
                   </label>
                   <div className="grid grid-cols-3 gap-3">
@@ -170,13 +168,13 @@ export default function IntakePage() {
                         onClick={() => setValue("business_type", type.value as "ONLINE" | "LOCAL" | "HYBRID")}
                         className={`p-4 text-center rounded-xl border transition-all duration-300 ${
                           selectedBusinessType === type.value
-                            ? "border-indigo-500 bg-indigo-500/10"
-                            : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                         }`}
                       >
                         <div className="text-2xl mb-2">{type.icon}</div>
-                        <div className="font-medium text-white">{type.label}</div>
-                        <div className="text-xs text-gray-400 mt-1">{type.description}</div>
+                        <div className="font-medium text-gray-900">{type.label}</div>
+                        <div className="text-xs text-gray-600 mt-1">{type.description}</div>
                       </button>
                     ))}
                   </div>
@@ -184,7 +182,7 @@ export default function IntakePage() {
 
                 {/* Budget */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Starting budget ($)
                   </label>
                   <Input
@@ -192,13 +190,13 @@ export default function IntakePage() {
                     min={0}
                     {...register("budget", { valueAsNumber: true })}
                     error={errors.budget?.message}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+                    className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500/20"
                   />
                 </div>
 
                 {/* Income Goal */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Monthly income goal ($)
                   </label>
                   <Input
@@ -206,13 +204,13 @@ export default function IntakePage() {
                     min={0}
                     {...register("income_goal", { valueAsNumber: true })}
                     error={errors.income_goal?.message}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+                    className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500/20"
                   />
                 </div>
 
                 {/* Weekly Hours */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Hours per week you can dedicate
                   </label>
                   <Input
@@ -221,16 +219,16 @@ export default function IntakePage() {
                     max={168}
                     {...register("weekly_hours", { valueAsNumber: true })}
                     error={errors.weekly_hours?.message}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-indigo-500/20"
+                    className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500/20"
                   />
                 </div>
               </div>
 
               <div className="p-8 pt-0 space-y-4">
                 {error && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-3">
-                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
-                      <svg className="w-3 h-3 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-3">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </div>

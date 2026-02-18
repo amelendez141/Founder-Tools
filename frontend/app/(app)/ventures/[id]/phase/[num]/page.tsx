@@ -80,7 +80,7 @@ export default function PhaseDetailPage({
   if (!phase) {
     return (
       <div className="text-center py-12">
-        <h1 className="text-2xl font-bold text-white">Phase not found</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Phase not found</h1>
       </div>
     );
   }
@@ -211,22 +211,22 @@ export default function PhaseDetailPage({
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
-            <Link href={`/ventures/${ventureId}`} className="hover:text-indigo-400 transition-colors">
+          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+            <Link href={`/ventures/${ventureId}`} className="hover:text-indigo-600 transition-colors">
               Venture
             </Link>
-            <span className="text-gray-600">/</span>
-            <span className="text-indigo-400">Phase {phaseNumber}</span>
+            <span className="text-gray-400">/</span>
+            <span className="text-indigo-600">Phase {phaseNumber}</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">{phase.name}</h1>
-          <p className="text-gray-400 mt-1">{phase.description}</p>
+          <h1 className="text-2xl font-bold text-gray-900">{phase.name}</h1>
+          <p className="text-gray-600 mt-1">{phase.description}</p>
         </div>
         <div
           className={cn(
             "px-4 py-1.5 rounded-full text-sm font-medium border",
-            phase.status === "COMPLETE" && "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-            phase.status === "ACTIVE" && "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
-            phase.status === "LOCKED" && "bg-white/5 text-gray-500 border-white/10"
+            phase.status === "COMPLETE" && "bg-emerald-50 text-emerald-600 border-emerald-200",
+            phase.status === "ACTIVE" && "bg-indigo-50 text-indigo-600 border-indigo-200",
+            phase.status === "LOCKED" && "bg-gray-100 text-gray-500 border-gray-200"
           )}
         >
           {phase.status}
@@ -235,15 +235,14 @@ export default function PhaseDetailPage({
 
       {/* Progress */}
       <div className="relative">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
-        <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
+        <div className="relative bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-white">Progress</h3>
-            <span className="text-sm text-gray-400">
-              <span className="text-indigo-400 font-medium">{satisfiedGates}</span> of {totalGates} gates completed
+            <h3 className="text-lg font-semibold text-gray-900">Progress</h3>
+            <span className="text-sm text-gray-600">
+              <span className="text-indigo-600 font-medium">{satisfiedGates}</span> of {totalGates} gates completed
             </span>
           </div>
-          <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
+          <div className="relative h-3 bg-gray-100 rounded-full overflow-hidden">
             <div
               className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
@@ -255,19 +254,18 @@ export default function PhaseDetailPage({
       {/* Phase Forms */}
       {phaseNumber === 1 && phase.status === "ACTIVE" && (
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+          <div className="relative bg-white rounded-xl border border-indigo-200 shadow-sm overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-2">
                 <span className="text-xl">🔍</span>
                 Complete Your Discovery
               </h3>
-              <p className="text-gray-400 text-sm mb-6">Fill out this form to complete the auto-evaluated gates</p>
+              <p className="text-gray-600 text-sm mb-6">Fill out this form to complete the auto-evaluated gates</p>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Problem Statement
                     <span className="text-gray-500 font-normal ml-2">(minimum 20 characters)</span>
                   </label>
@@ -275,15 +273,15 @@ export default function PhaseDetailPage({
                     value={problemStatement}
                     onChange={(e) => setProblemStatement(e.target.value)}
                     placeholder="What problem are you solving? Describe the pain point..."
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[100px]"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[100px]"
                   />
-                  <p className={cn("text-xs mt-1", problemStatement.length >= 20 ? "text-emerald-400" : "text-gray-500")}>
+                  <p className={cn("text-xs mt-1", problemStatement.length >= 20 ? "text-emerald-600" : "text-gray-500")}>
                     {problemStatement.length}/20 characters {problemStatement.length >= 20 && "✓"}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Competitors / Existing Solutions
                     <span className="text-gray-500 font-normal ml-2">(minimum 3 required)</span>
                   </label>
@@ -295,20 +293,20 @@ export default function PhaseDetailPage({
                           value={competitor}
                           onChange={(e) => handleCompetitorChange(index, e.target.value)}
                           placeholder={`Competitor ${index + 1}`}
-                          className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                          className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
                         />
                         {competitors.length > 3 && (
-                          <button onClick={() => removeCompetitor(index)} className="px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                          <button onClick={() => removeCompetitor(index)} className="px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                             ✕
                           </button>
                         )}
                       </div>
                     ))}
                   </div>
-                  <button onClick={addCompetitor} className="mt-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors">
+                  <button onClick={addCompetitor} className="mt-2 text-sm text-indigo-600 hover:text-indigo-500 transition-colors">
                     + Add another competitor
                   </button>
-                  <p className={cn("text-xs mt-1", competitors.filter((c) => c.trim()).length >= 3 ? "text-emerald-400" : "text-gray-500")}>
+                  <p className={cn("text-xs mt-1", competitors.filter((c) => c.trim()).length >= 3 ? "text-emerald-600" : "text-gray-500")}>
                     {competitors.filter((c) => c.trim()).length}/3 competitors {competitors.filter((c) => c.trim()).length >= 3 && "✓"}
                   </p>
                 </div>
@@ -321,7 +319,7 @@ export default function PhaseDetailPage({
                   >
                     {isSaving ? "Saving..." : "Save & Evaluate"}
                   </Button>
-                  {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                  {formSaved && <span className="text-emerald-600 text-sm">✓ Saved!</span>}
                 </div>
               </div>
             </div>
@@ -332,15 +330,14 @@ export default function PhaseDetailPage({
       {/* Phase 2 Planning Form */}
       {phaseNumber === 2 && phase.status === "ACTIVE" && (
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+          <div className="relative bg-white rounded-xl border border-indigo-200 shadow-sm overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-2">
                 <span className="text-xl">📋</span>
                 Complete Your Business Plan
               </h3>
-              <p className="text-gray-400 text-sm mb-6">Fill out all fields to complete Phase 2</p>
+              <p className="text-gray-600 text-sm mb-6">Fill out all fields to complete Phase 2</p>
 
               <div className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -353,12 +350,12 @@ export default function PhaseDetailPage({
                     { label: "Competitive Advantage", value: advantage, setValue: setAdvantage, placeholder: "What makes you different from competitors?" },
                   ].map((field) => (
                     <div key={field.label}>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">{field.label}</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{field.label}</label>
                       <textarea
                         value={field.value}
                         onChange={(e) => field.setValue(e.target.value)}
                         placeholder={field.placeholder}
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
                       />
                     </div>
                   ))}
@@ -366,29 +363,29 @@ export default function PhaseDetailPage({
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Startup Costs ($)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Startup Costs ($)</label>
                     <input
                       type="number"
                       value={startupCosts}
                       onChange={(e) => setStartupCosts(e.target.value)}
                       placeholder="0"
-                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Monthly Costs ($)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Costs ($)</label>
                     <input
                       type="number"
                       value={monthlyCosts}
                       onChange={(e) => setMonthlyCosts(e.target.value)}
                       placeholder="0"
-                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Offer Statement
                     <span className="text-gray-500 font-normal ml-2">(Your pitch in one sentence)</span>
                   </label>
@@ -396,7 +393,7 @@ export default function PhaseDetailPage({
                     value={offerStatement}
                     onChange={(e) => setOfferStatement(e.target.value)}
                     placeholder="We help [target customer] solve [problem] by [solution] so they can [benefit]."
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
                   />
                 </div>
 
@@ -408,7 +405,7 @@ export default function PhaseDetailPage({
                   >
                     {isSaving ? "Saving..." : "Save & Evaluate"}
                   </Button>
-                  {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                  {formSaved && <span className="text-emerald-600 text-sm">✓ Saved!</span>}
                   {!canSavePlanning && <span className="text-gray-500 text-sm">Fill all fields to continue</span>}
                 </div>
               </div>
@@ -420,15 +417,14 @@ export default function PhaseDetailPage({
       {/* Phase 3 Formation Form */}
       {phaseNumber === 3 && phase.status === "ACTIVE" && (
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+          <div className="relative bg-white rounded-xl border border-indigo-200 shadow-sm overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-2">
                 <span className="text-xl">🏗️</span>
                 Business Formation
               </h3>
-              <p className="text-gray-400 text-sm mb-6">Choose your business entity type (or skip for now)</p>
+              <p className="text-gray-600 text-sm mb-6">Choose your business entity type (or skip for now)</p>
 
               <div className="grid gap-3 md:grid-cols-2 mb-6">
                 {[
@@ -443,12 +439,12 @@ export default function PhaseDetailPage({
                     className={cn(
                       "p-4 rounded-xl border-2 text-left transition-all",
                       entityType === option.value
-                        ? "border-indigo-500 bg-indigo-500/10"
-                        : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
+                        ? "border-indigo-500 bg-indigo-50"
+                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     )}
                   >
-                    <div className="font-medium text-white">{option.label}</div>
-                    <div className="text-sm text-gray-400 mt-1">{option.desc}</div>
+                    <div className="font-medium text-gray-900">{option.label}</div>
+                    <div className="text-sm text-gray-600 mt-1">{option.desc}</div>
                   </button>
                 ))}
               </div>
@@ -461,7 +457,7 @@ export default function PhaseDetailPage({
                 >
                   {isSaving ? "Saving..." : "Save & Evaluate"}
                 </Button>
-                {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                {formSaved && <span className="text-emerald-600 text-sm">✓ Saved!</span>}
               </div>
             </div>
           </div>
@@ -471,39 +467,38 @@ export default function PhaseDetailPage({
       {/* Phase 5 Scale Form */}
       {phaseNumber === 5 && phase.status === "ACTIVE" && (
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-50" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-indigo-500/30 overflow-hidden">
+          <div className="relative bg-white rounded-xl border border-indigo-200 shadow-sm overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-2">
                 <span className="text-xl">📈</span>
                 Create Your 90-Day Growth Plan
               </h3>
-              <p className="text-gray-400 text-sm mb-6">Define your growth strategy for the next 90 days</p>
+              <p className="text-gray-600 text-sm mb-6">Define your growth strategy for the next 90 days</p>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Growth Goal</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Growth Goal</label>
                   <textarea
                     value={growthGoal}
                     onChange={(e) => setGrowthGoal(e.target.value)}
                     placeholder="What's your main growth goal for the next 90 days? (e.g., Reach $10k MRR, Get 100 customers)"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[80px]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Growth Strategy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Growth Strategy</label>
                   <textarea
                     value={growthStrategy}
                     onChange={(e) => setGrowthStrategy(e.target.value)}
                     placeholder="How will you achieve this goal? What channels and tactics will you use?"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[100px]"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[100px]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Key Milestones
                     <span className="text-gray-500 font-normal ml-2">(one per line)</span>
                   </label>
@@ -511,7 +506,7 @@ export default function PhaseDetailPage({
                     value={keyMilestones}
                     onChange={(e) => setKeyMilestones(e.target.value)}
                     placeholder={"Week 1-2: Launch marketing campaign\nWeek 3-4: Reach 25 customers\nWeek 5-8: Hit $5k revenue\nWeek 9-12: Scale to $10k"}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[120px]"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 min-h-[120px]"
                   />
                 </div>
 
@@ -523,7 +518,7 @@ export default function PhaseDetailPage({
                   >
                     {isSaving ? "Saving..." : "Generate Growth Plan"}
                   </Button>
-                  {formSaved && <span className="text-emerald-400 text-sm">✓ Saved!</span>}
+                  {formSaved && <span className="text-emerald-600 text-sm">✓ Saved!</span>}
                 </div>
               </div>
             </div>
@@ -533,10 +528,9 @@ export default function PhaseDetailPage({
 
       {/* Gate Criteria */}
       <div className="relative">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-30" />
-        <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-2">Gate Criteria</h3>
-          <p className="text-gray-400 text-sm mb-6">Complete all gates to advance to the next phase</p>
+        <div className="relative bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Gate Criteria</h3>
+          <p className="text-gray-600 text-sm mb-6">Complete all gates to advance to the next phase</p>
 
           <div className="space-y-3">
             {phase.gate_criteria.map((gate) => (
@@ -544,7 +538,7 @@ export default function PhaseDetailPage({
                 key={gate.key}
                 className={cn(
                   "flex items-center gap-3 p-4 rounded-xl border transition-all",
-                  gate.satisfied ? "bg-emerald-500/10 border-emerald-500/30" : "bg-white/[0.02] border-white/10"
+                  gate.satisfied ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border-gray-200"
                 )}
               >
                 <button
@@ -552,7 +546,7 @@ export default function PhaseDetailPage({
                   disabled={gate.gate_type === "auto" || isUpdating || phase.status === "LOCKED"}
                   className={cn(
                     "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
-                    gate.satisfied ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 hover:border-gray-400",
+                    gate.satisfied ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-400 hover:border-gray-500",
                     gate.gate_type === "auto" && !gate.satisfied && "cursor-not-allowed opacity-60"
                   )}
                 >
@@ -563,7 +557,7 @@ export default function PhaseDetailPage({
                   )}
                 </button>
                 <div className="flex-1">
-                  <p className={cn("font-medium", gate.satisfied ? "text-emerald-400" : "text-gray-300")}>
+                  <p className={cn("font-medium", gate.satisfied ? "text-emerald-700" : "text-gray-700")}>
                     {gate.label}
                   </p>
                   <p className="text-xs text-gray-500">
@@ -578,11 +572,11 @@ export default function PhaseDetailPage({
 
           {phase.status === "ACTIVE" && (
             <div className="mt-6 flex gap-3">
-              <Button onClick={handleEvaluate} disabled={isEvaluating} variant="outline" className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
+              <Button onClick={handleEvaluate} disabled={isEvaluating} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 {isEvaluating ? "Evaluating..." : "Re-evaluate Gates"}
               </Button>
               <Link href={`/ventures/${ventureId}/chat`}>
-                <Button variant="outline" className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   Get AI Help
                 </Button>
               </Link>
@@ -590,13 +584,13 @@ export default function PhaseDetailPage({
           )}
 
           {phase.status === "COMPLETE" && (
-            <div className="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+            <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🎉</span>
                   <div>
-                    <p className="font-medium text-emerald-400">Phase Complete!</p>
-                    <p className="text-sm text-emerald-400/70">Great job! You've completed all the gates.</p>
+                    <p className="font-medium text-emerald-700">Phase Complete!</p>
+                    <p className="text-sm text-emerald-600">Great job! You've completed all the gates.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
@@ -623,10 +617,9 @@ export default function PhaseDetailPage({
       {/* Guide Content */}
       {phase.guide_content && (
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-30" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Phase Guide</h3>
-            <p className="whitespace-pre-wrap text-gray-300">{phase.guide_content}</p>
+          <div className="relative bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Phase Guide</h3>
+            <p className="whitespace-pre-wrap text-gray-700">{phase.guide_content}</p>
           </div>
         </div>
       )}
@@ -634,13 +627,12 @@ export default function PhaseDetailPage({
       {/* Tool Recommendations */}
       {phase.tool_recommendations && phase.tool_recommendations.length > 0 && (
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-30" />
-          <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/10 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Recommended Tools</h3>
+          <div className="relative bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended Tools</h3>
             <ul className="space-y-2">
               {phase.tool_recommendations.map((tool, index) => (
-                <li key={index} className="flex items-center gap-2 text-gray-300">
-                  <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li key={index} className="flex items-center gap-2 text-gray-700">
+                  <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   {tool}
